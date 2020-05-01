@@ -129,8 +129,7 @@ public class BlockAction extends GenericAction {
 				actionData = gson().fromJson(data, SignActionData.class);
 			}
 			else if (getMaterial() == Material.COMMAND_BLOCK) {
-				actionData = new CommandActionData();
-				((CommandActionData)actionData).command = data;
+				actionData = gson().fromJson(data, CommandActionData.class);
 			}
 		}
 	}
@@ -402,7 +401,7 @@ public class BlockAction extends GenericAction {
 				}
 				state = block.getState();
 
-				if (!s.owner.isEmpty()) {
+				if (s.owner != null && !s.owner.isEmpty()) {
 					final Skull skull = (Skull) state;
 					skull.setOwningPlayer(Bukkit.getOfflinePlayer(EntityUtils.uuidOf((s.owner))));
 				}
@@ -417,6 +416,8 @@ public class BlockAction extends GenericAction {
 				final SpawnerActionData s = (SpawnerActionData) blockActionData;
 
 				// Set spawner data
+				block.setType(getMaterial());
+				state = block.getState();
 				final CreatureSpawner spawner = (CreatureSpawner) state;
 				spawner.setDelay(s.getDelay());
 				spawner.setSpawnedType(s.getEntityType());
@@ -428,6 +429,8 @@ public class BlockAction extends GenericAction {
 			 */
 			if (getMaterial() == Material.COMMAND_BLOCK
 					&& blockActionData instanceof CommandActionData) {
+				block.setType(getMaterial());
+				state = block.getState();
 				final CommandBlock cmdblock = (CommandBlock) state;
 				final CommandActionData c = (CommandActionData) blockActionData;
 				cmdblock.setCommand(c.command);
@@ -439,6 +442,9 @@ public class BlockAction extends GenericAction {
 			if (parameters.getProcessType() == PrismProcessType.ROLLBACK
 					&& Tag.SIGNS.isTagged(getMaterial())
 					&& blockActionData instanceof SignActionData) {
+
+				block.setType(getMaterial());
+				state = block.getState();
 
 				final SignActionData s = (SignActionData) blockActionData;
 
